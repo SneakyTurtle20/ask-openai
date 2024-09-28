@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import axios from 'axios';
+import { LoadingSpinner } from './components/loader';
 
 export default function Home() {
   const [question, setQuestion] = useState('');
@@ -11,15 +13,13 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
     try {
-      setAnswer('This is openai answer');
+      const response = await axios.post('/api/ask', { question });
+      setAnswer(response.data.answer);
     } catch (error) {
       console.error('Error:', error);
       setAnswer('An error occurred while fetching the answer.');
     }
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-   
+    setLoading(false);
   };
 
   return (
@@ -39,7 +39,7 @@ export default function Home() {
             className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             disabled={loading}
           >
-            {loading ? 'Loading...' : 'Ask'}
+            {loading ? <LoadingSpinner /> : 'Ask'}
           </button>
         </form>
         {answer && (
